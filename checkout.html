@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เช็คเอาต์ WorkPing × กัญชลี 101</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: url('https://drive.google.com/file/d/1KiotPsj9gY_ME_26wdk6BCwde3J-dDn-/view?usp=drive_link') no-repeat center/cover; 
+    }
+    header img {
+      max-width: 200px;
+      margin: 20px auto;
+      display: block;
+    }
+    .form-container {
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px 0;
+      font-size: 18px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+    #location-info-co {
+      margin: 15px 0;
+      font-size: 16px;
+      min-height: 24px;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 20px;
+      background: transparent;
+      border: 3px solid #fff;
+      border-radius: 5px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      border-color: #888;
+      color: #888;
+      cursor: default;
+    }
+    button:hover:enabled {
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://drive.google.com/uc?export=view&id=1l_2eUeAzMYF1zUtLY7pjqITiCTbf4-Xy" alt="WorkPing Time">
+    <img src="https://drive.google.com/uc?export=view&id=1vc7lO9YUzQVq4QxsPqEm4-IGh2_7Evd-" alt="กัญชลี 101" style="width:180px;margin-top:5px;">
+  </header>
+  <div class="form-container">
+    <label for="input-name-co">กรอกชื่อ :</label>
+    <input type="text" id="input-name-co" placeholder="เช่น สมชาย ใจดี">
+    <p id="location-info-co">กำลังดึงตำแหน่ง…</p>
+    <button id="btn-checkout" disabled>ออกงาน</button>
+  </div>
+  <script>
+    let currentLatCo = null, currentLngCo = null;
+
+    function getLocationCo(){
+      if (navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(
+          function(position){
+            currentLatCo = position.coords.latitude;
+            currentLngCo = position.coords.longitude;
+            document.getElementById('location-info-co').innerText =
+              `ตำแหน่ง: ${currentLatCo.toFixed(6)}, ${currentLngCo.toFixed(6)}`;
+            checkEnableButtonCo();
+          },
+          function(err){
+            document.getElementById('location-info-co').innerText =
+              'ไม่สามารถดึงพิกัดได้: ' + err.message;
+          },
+          { enableHighAccuracy: true }
+        );
+      } else {
+        document.getElementById('location-info-co').innerText =
+          'อุปกรณ์ไม่รองรับ GPS';
+      }
+    }
+
+    function checkEnableButtonCo(){
+      const nameVal = document.getElementById('input-name-co').value.trim();
+      if (nameVal && currentLatCo !== null && currentLngCo !== null){
+        document.getElementById('btn-checkout').disabled = false;
+      } else {
+        document.getElementById('btn-checkout').disabled = true;
+      }
+    }
+
+    document.getElementById('input-name-co').addEventListener('input', checkEnableButtonCo);
+
+    document.getElementById('btn-checkout').addEventListener('click', function(){
+      const name = document.getElementById('input-name-co').value.trim();
+      const payload = {
+        name: name,
+        timestamp: new Date().toISOString(),
+        lat: currentLatCo,
+        lng: currentLngCo
+      };
+      google.script.run.withSuccessHandler(function(res){
+        window.location.href = 'checkoutSuccess.html?time=' 
+          + encodeURIComponent(new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }));
+      }).handleCheckout(payload);
+    });
+
+    window.onload = function(){
+      getLocationCo();
+    };
+  </script>
+</body>
+</html>
