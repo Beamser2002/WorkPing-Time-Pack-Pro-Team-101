@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เช็คอิน WorkPing × กัญชลี 101</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: url('https://drive.google.com/file/d/1KiotPsj9gY_ME_26wdk6BCwde3J-dDn-/view?usp=drive_link') no-repeat center/cover; 
+    }
+    header img {
+      max-width: 200px;
+      margin: 20px auto;
+      display: block;
+    }
+    .form-container {
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px 0;
+      font-size: 18px;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+    input[type="file"] {
+      color: #fff;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #location-info {
+      margin: 15px 0;
+      font-size: 16px;
+      min-height: 24px;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 20px;
+      background: transparent;
+      border: 3px solid #fff;
+      border-radius: 5px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      border-color: #888;
+      color: #888;
+      cursor: default;
+    }
+    button:hover:enabled {
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://drive.google.com/uc?export=view&id=1l_2eUeAzMYF1zUtLY7pjqITiCTbf4-Xy" alt="WorkPing Time">
+    <img src="https://drive.google.com/uc?export=view&id=1vc7lO9YUzQVq4QxsPqEm4-IGh2_7Evd-" alt="กัญชลี 101" style="width: 180px; margin-top: 5px;">
+  </header>
+  <div class="form-container">
+    <label for="input-name">กรอกชื่อ :</label>
+    <input type="text" id="input-name" placeholder="เช่น สมชาย ใจดี">
+    <label for="select-time">เลือกเวลาที่เข้างาน :</label>
+    <select id="select-time">
+      <option value="" disabled selected>-- เลือกเวลา --</option>
+      <option value="10:00">10:00</option>
+      <option value="11:00">11:00</option>
+      <option value="15:30">15:30</option>
+    </select>
+    <label for="photo">ถ่ายรูปเข้างาน :</label>
+    <input type="file" id="photo" accept="image/*;capture=camera">
+    <p id="location-info">กำลังดึงตำแหน่ง…</p>
+    <button id="btn-checkin" disabled>เช้างาน</button>
+  </div>
+  <script>
+    let currentLat = null, currentLng = null;
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError, { enableHighAccuracy: true });
+      } else {
+        document.getElementById('location-info').innerText = 'อุปกรณ์ไม่รองรับ GPS';
+      }
+    }
+
+    function onLocationSuccess(position) {
+      currentLat = position.coords.latitude;
+      currentLng = position.coords.longitude;
+      document.getElementById('location-info').innerText =
+        `ตำแหน่ง: ${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+      checkEnableButton();
+    }
+
+    function onLocationError(err) {
+      document.getElementById('location-info').innerText =
+        'ไม่สามารถดึงพิกัดได้: ' + err.message;
+    }
+
+    function checkEnableButton() {
+      const nameVal = document.getElementById('input-name').value.trim();
+      const timeVal = document.getElementById('select-time').value;
+      if (nameVal && timeVal && currentLat !== null && currentLng !== null) {
+        document.getElementById('btn-checkin').disabled = false;
+      } else {
+        document.getElementById('btn-checkin').disabled = true;
+      }
+    }
+
+    document.getElementById('input-name').addEventListener('input', checkEnableButton);
+    document.getElementById('select-time').addEventListener('change', checkEnableButton);
+
+    document.getElementById('btn-checkin').addEventListener('click', function(){
+      const name = document.getElementById('input-name').value.trim();
+      const scheduledTime = document.getElementById('select-time').value;
+      const fileInput = document.getElementById('photo');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('กรุณาถ่ายรูปเข้างานก่อน');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Data = e.target.result.split(',')[1];
+        const contentType = file.type;
+        const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), contentType, file.name);
+        google.script.run.withSuccessHandler(function(imageURL) {
+          const payload = {
+            name: name,
+            scheduledTime: scheduledTime,
+            timestamp: new Date().toISOString(),
+            lat: currentLat,
+            lng: currentLng,
+            imageURL: imageURL
+          };
+          google.script.run.withSuccessHandler(function(res) {
+            window.location.href = 'checkinSuccess.html?time=' 
+              + encodeURIComponent(new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }));
+          }).handleCheckin(payload);
+        }).uploadImage(blob);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.onload = function(){
+      getLocation();
+    };
+  </script>
+</body>
+</html>
