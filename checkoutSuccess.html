@@ -2,72 +2,58 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>เช็คเอาต์สำเร็จ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { background: url('https://drive.google.com/file/d/1KiotPsj9gY_ME_26wdk6BCwde3J-dDn-/view?usp=drive_link') no-repeat center/cover; 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Sarabun', sans-serif;
+      background: url('background.png') no-repeat center/cover;
+      color: #fff; text-align: center;
     }
-    header img {
-      max-width: 200px;
-      margin: 20px auto;
-      display: block;
-    }
-    .box {
+    header img { max-width: 200px; margin: 20px auto; display: block; }
+    .success-box {
+      width: 90%; max-width: 400px;
+      margin: 30px auto;
+      padding: 20px;
       border: 3px solid #fff;
       border-radius: 8px;
-      padding: 20px;
-      margin: 40px auto;
-      width: 90%;
-      max-width: 350px;
     }
-    .box h2 {
-      margin: 10px 0;
-      font-size: 24px;
-    }
-    .box p {
-      margin: 15px 0;
-      font-size: 20px;
-    }
+    .success-box h2 { font-size: 24px; margin-bottom: 10px; }
+    .success-box p { font-size: 20px; margin: 8px 0; }
     .btn-back {
       display: block;
-      width: 40%;
-      max-width: 200px;
-      padding: 12px 0;
-      margin: 30px auto;
+      width: 90%; max-width: 300px;
+      margin: 20px auto;
+      padding: 15px 0;
       border: 3px solid #fff;
-      border-radius: 5px;
-      background: transparent;
+      border-radius: 8px;
       font-size: 18px;
       font-weight: bold;
       color: #fff;
+      background: transparent;
       text-decoration: none;
-      text-align: center;
+      transition: background 0.3s;
     }
-    .btn-back:hover {
-      background: rgba(255,255,255,0.1);
-    }
+    .btn-back:hover { background: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
   <header>
-    <img src="https://drive.google.com/uc?export=view&id=1l_2eUeAzMYF1zUtLY7pjqITiCTbf4-Xy" alt="WorkPing Time">
-    <img src="https://drive.google.com/uc?export=view&id=1vc7lO9YUzQVq4QxsPqEm4-IGh2_7Evd-" alt="กัญชลี 101" style="width:180px;margin-top:5px;">
+    <img src="logowork.png" alt="WorkPing Time">
+    <img src="logo101.png" alt="กัญชลี 101" style="width:180px; margin-top:5px;">
   </header>
-  <div class="box">
-    <h2>คุณลงชื่อ<br>ออกงานเรียบร้อย</h2>
-    <hr style="border:1px solid #fff;margin:10px 0;">
+  <div class="success-box">
+    <h2>คุณลงชื่อออก​งานเรียบร้อย</h2>
+    <hr style="border:1px solid #fff; margin: 10px 0;">
     <p>ขณะนี้เวลา : <span id="time-display">xx:xx</span></p>
   </div>
-  <a href="menu.html" class="btn-back">กลับหน้าหลัก</a>
+  <a href="index.html" class="btn-back">กลับหน้าหลัก</a>
   <script>
-    function getQueryParam(param){
-      const url = new URL(window.location.href);
-      return url.searchParams.get(param);
-    }
-    window.onload = function(){
-      const timeStr = getQueryParam('time') || '-';
-      document.getElementById('time-display').innerText = timeStr;
-    };
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('time') || new Date().toLocaleTimeString();
+    document.getElementById('time-display').innerText = t;
   </script>
 </body>
 </html>
