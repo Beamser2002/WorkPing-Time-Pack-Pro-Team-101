@@ -2,48 +2,49 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WorkPing Time × กัญชลี 101</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      background: url('https://drive.google.com/uc?export=view&id=1KiotPsj9gY_ME_26wdk6BCwde3J-dDn-') no-repeat center/cover;
-      margin: 0;
-      padding: 0;
+    /* Reset เบื้องต้น */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
       font-family: 'Sarabun', sans-serif;
+      background: url('background.png') no-repeat center/cover;
       color: #fff;
       text-align: center;
     }
+    header { padding: 20px 0; }
     header img {
       max-width: 240px;
-      margin: 20px auto;
+      width: 80%;
+      height: auto;
+      margin: 0 auto 10px;
       display: block;
     }
     .btn-container {
-      margin-top: 60px;
+      margin: 60px auto;
+      width: 90%; max-width: 300px;
     }
     .btn {
       display: block;
-      width: 80%;
-      max-width: 300px;
-      margin: 20px auto;
+      width: 100%;
       padding: 15px 0;
+      margin: 10px 0;
       border: 3px solid #fff;
       border-radius: 8px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #fff;
-      background: transparent;
+      font-size: 20px; font-weight: bold;
+      color: #fff; background: transparent;
       text-decoration: none;
+      transition: background 0.3s;
     }
-    .btn:hover {
-      background: rgba(255,255,255,0.1);
-    }
+    .btn:hover { background: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
   <header>
-    <img src="https://drive.google.com/uc?export=view&id=1l_2eUeAzMYF1zUtLY7pjqITiCTbf4-Xy" alt="WorkPing Time">
-    <img src="https://drive.google.com/uc?export=view&id=1vc7lO9YUzQVq4QxsPqEm4-IGh2_7Evd-" alt="กัญชลี 101" style="width: 200px; margin-top: 10px;">
+    <img src="logowork.png" alt="WorkPing Time">
+    <img src="logo101.png" alt="กัญชลี 101" style="width:200px; margin-top:10px;">
   </header>
   <div class="btn-container">
     <a href="checkin.html" class="btn">เข้า​งาน</a>
