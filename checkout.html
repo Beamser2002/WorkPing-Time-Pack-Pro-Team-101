@@ -2,127 +2,83 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>เช็คเอาต์ WorkPing × กัญชลี 101</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เช็คเอาต์ - WorkPing Time</title>
   <style>
-    body { background: url('https://drive.google.com/file/d/1KiotPsj9gY_ME_26wdk6BCwde3J-dDn-/view?usp=drive_link') no-repeat center/cover; 
+    /* ใช้ CSS เดียวกับ checkin.html */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Sarabun', sans-serif;
+      background: url('background.png') no-repeat center/cover;
+      color: #fff;
+      text-align: center;
     }
+    header { padding: 20px 0; }
     header img {
       max-width: 200px;
-      margin: 20px auto;
       display: block;
+      margin: 0 auto 20px;
     }
     .form-container {
-      width: 90%;
-      max-width: 400px;
+      width: 90%; max-width: 400px;
       margin: 20px auto;
       text-align: left;
     }
-    label {
+    .form-container label {
       display: block;
-      margin: 15px 0 5px 0;
+      margin: 10px 0 5px;
       font-size: 18px;
     }
-    input[type="text"] {
+    .form-container input[type="text"],
+    .form-container input[type="file"] {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
+      padding: 12px;
+      margin-bottom: 15px;
       border: 2px solid #fff;
-      border-radius: 5px;
-      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
       color: #fff;
-    }
-    #location-info-co {
-      margin: 15px 0;
       font-size: 16px;
-      min-height: 24px;
     }
-    button {
+    .form-container button {
       width: 100%;
-      padding: 12px 0;
-      margin-top: 20px;
-      background: transparent;
-      border: 3px solid #fff;
-      border-radius: 5px;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #ff8c00;
+      color: #fff;
       font-size: 20px;
       font-weight: bold;
-      color: #fff;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
-    button:disabled {
-      border-color: #888;
-      color: #888;
-      cursor: default;
-    }
-    button:hover:enabled {
-      background: rgba(255,255,255,0.1);
-    }
+    .form-container button:hover { opacity: 0.8; }
+    #position { font-size: 16px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
   <header>
-    <img src="https://drive.google.com/uc?export=view&id=1l_2eUeAzMYF1zUtLY7pjqITiCTbf4-Xy" alt="WorkPing Time">
-    <img src="https://drive.google.com/uc?export=view&id=1vc7lO9YUzQVq4QxsPqEm4-IGh2_7Evd-" alt="กัญชลี 101" style="width:180px;margin-top:5px;">
+    <img src="logowork.png" alt="WorkPing Time">
+    <img src="logo101.png" alt="กัญชลี 101" style="width:180px; margin-top:5px;">
   </header>
   <div class="form-container">
-    <label for="input-name-co">กรอกชื่อ :</label>
-    <input type="text" id="input-name-co" placeholder="เช่น สมชาย ใจดี">
-    <p id="location-info-co">กำลังดึงตำแหน่ง…</p>
-    <button id="btn-checkout" disabled>ออกงาน</button>
+    <label for="name">กรอกชื่อ :</label>
+    <input type="text" id="name" placeholder="ชื่อของคุณ">
+    <label>ถ่ายรูปออก​งาน :</label>
+    <input type="file" id="photo" accept="image/*" capture="environment">
+    <p id="position">ตำแหน่ง: --, --</p>
+    <button onclick="submitCheckout()">ออก​งาน</button>
   </div>
   <script>
-    let currentLatCo = null, currentLngCo = null;
-
-    function getLocationCo(){
-      if (navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(
-          function(position){
-            currentLatCo = position.coords.latitude;
-            currentLngCo = position.coords.longitude;
-            document.getElementById('location-info-co').innerText =
-              `ตำแหน่ง: ${currentLatCo.toFixed(6)}, ${currentLngCo.toFixed(6)}`;
-            checkEnableButtonCo();
-          },
-          function(err){
-            document.getElementById('location-info-co').innerText =
-              'ไม่สามารถดึงพิกัดได้: ' + err.message;
-          },
-          { enableHighAccuracy: true }
-        );
-      } else {
-        document.getElementById('location-info-co').innerText =
-          'อุปกรณ์ไม่รองรับ GPS';
-      }
-    }
-
-    function checkEnableButtonCo(){
-      const nameVal = document.getElementById('input-name-co').value.trim();
-      if (nameVal && currentLatCo !== null && currentLngCo !== null){
-        document.getElementById('btn-checkout').disabled = false;
-      } else {
-        document.getElementById('btn-checkout').disabled = true;
-      }
-    }
-
-    document.getElementById('input-name-co').addEventListener('input', checkEnableButtonCo);
-
-    document.getElementById('btn-checkout').addEventListener('click', function(){
-      const name = document.getElementById('input-name-co').value.trim();
-      const payload = {
-        name: name,
-        timestamp: new Date().toISOString(),
-        lat: currentLatCo,
-        lng: currentLngCo
-      };
-      google.script.run.withSuccessHandler(function(res){
-        window.location.href = 'checkoutSuccess.html?time=' 
-          + encodeURIComponent(new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }));
-      }).handleCheckout(payload);
+    navigator.geolocation.getCurrentPosition(pos => {
+      document.getElementById('position').innerText =
+        `ตำแหน่ง: ${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
     });
-
-    window.onload = function(){
-      getLocationCo();
-    };
+    function submitCheckout() {
+      alert('กำลังส่งข้อมูลเช็คเอาต์...');
+      // TODO: fetch หรือ google.script.run
+    }
   </script>
 </body>
 </html>
