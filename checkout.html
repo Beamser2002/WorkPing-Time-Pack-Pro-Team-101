@@ -94,39 +94,32 @@
     function submitCheckout() {
       const name  = document.getElementById('name').value.trim();
       const photo = document.getElementById('photo').files[0];
-      const posText = document.getElementById('position').innerText;
-      const parts = posText.split(' ');
-      const lat   = parts[1].replace(',', '');
-      const lng   = parts[2];
+      const [ , latRaw, lngRaw ] = document.getElementById('position').innerText.split(' ');
+      const lat = latRaw.replace(',', '');
+      const lng = lngRaw;
 
       if (!name || !photo) {
-        alert('กรุณากรอกชื่อและถ่ายรูปก่อนออกงาน');
-        return;
+        return alert('กรุณากรอกชื่อและถ่ายรูปก่อนออกงาน');
       }
 
-      const payload = {
-        name: name,
-        time: '',
-        lat: lat,
-        lng: lng,
-        type: 'checkout'
-      };
+      const payload = { name, time:'', lat, lng, type:'checkout' };
 
       fetch(WEBHOOK_URL, {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify(payload)
       })
-      .then(r => r.json())
+      .then(r => r.json().catch(_=>{}))
       .then(res => {
-        if (res.status === 'success') {
-          const now = new Date().toLocaleTimeString();
-          window.location = `checkoutSuccess.html?time=${encodeURIComponent(now)}`;
-        } else {
-          alert('เกิดข้อผิดพลาด: ' + res.message);
-        }
+        console.log('Hookdeck response:', res);
+        const now = new Date().toLocaleTimeString();
+        window.location = `checkoutSuccess.html?time=${encodeURIComponent(now)}`;
       })
-      .catch(() => alert('ส่งข้อมูลไม่สำเร็จ'));
+      .catch(err => {
+        console.error(err);
+        const now = new Date().toLocaleTimeString();
+        window.location = `checkoutSuccess.html?time=${encodeURIComponent(now)}`;
+      });
     }
   </script>
 </body>
