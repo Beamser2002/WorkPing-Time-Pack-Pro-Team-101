@@ -102,6 +102,9 @@
   </div>
 
   <script>
+    // ปรับเป็น Hookdeck endpoint ของคุณ
+    const WEBHOOK_URL = 'https://hkdk.events/dwk23f8pvzgot6';
+
     // ดึงพิกัด GPS
     navigator.geolocation.getCurrentPosition(pos => {
       const lat = pos.coords.latitude.toFixed(6);
@@ -113,23 +116,25 @@
       const name  = document.getElementById('name').value.trim();
       const time  = document.getElementById('time').value;
       const photo = document.getElementById('photo').files[0];
-      const pos   = document.getElementById('position').innerText.split(' ')[1].replace(',', '');
-      const lng   = document.getElementById('position').innerText.split(' ')[2];
+      const posText = document.getElementById('position').innerText;
+      const parts = posText.split(' ');
+      const lat   = parts[1].replace(',', '');
+      const lng   = parts[2];
 
       if (!name || !time || !photo) {
-        return alert('กรุณากรอกชื่อ เลือกเวลา และถ่ายรูปให้ครบถ้วน');
+        alert('กรุณากรอกชื่อ เลือกเวลา และถ่ายรูปให้ครบถ้วน');
+        return;
       }
 
       const payload = {
         name: name,
         time: time,
-        lat: pos,
+        lat: lat,
         lng: lng,
         type: 'checkin'
       };
 
-      const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxwkPCGjehhO_LdKv5rtDx1x9zfeO5pc4goqbysjT0BeSuOmMKJOdzSKv-lhZK-C99b/exec';
-      fetch(WEB_APP_URL, {
+      fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
